@@ -1,5 +1,5 @@
 @import 'normalize.css';
-@import './styles/_variables.scss'; // Пример импорта переменных, если используются
+@import './components/ProgressBar.tsx/ProgressBar.scss';
 
 #root {
   max-width: 1280px;
