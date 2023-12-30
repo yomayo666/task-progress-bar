@@ -1,54 +1,68 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { addData } from '../store/games/reducer';
-import { DataObject } from '../typs/ProgressBar';
+import { DataObject } from '../typs/progressBarTyps';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import { v4 as uuidv4 } from 'uuid';
 
 const ProgressGameInput: React.FC = () => {
   const dispatch = useDispatch();
   const [nameGame, setNameGame] = useState<string>('');
   const [points, setPoints] = useState<string>('');
 
-  const handleInputChange = ({ target: { name, value } }: ChangeEvent<HTMLInputElement>) => {
-    if (name === 'nameGame') {
-      setNameGame(value);
-    } else if (name === 'points') {
-      setPoints(value);
-    }
+  const handleChange = ({ target: { name, value } }: ChangeEvent<HTMLInputElement>) => {
+    name === 'nameGame' ? setNameGame(value) : setPoints(value);
   };
 
   const handleButtonClick = () => {
     if (points !== '') {
       const numericValue = parseFloat(points) as number;
-      if (!Number.isNaN(numericValue)) {
-        const dataObject: DataObject = { thresholdPoints: numericValue, name: nameGame, games: [] };
+      if (Number.isFinite(numericValue)) {
+        const dataObject: DataObject = { id: uuidv4(), thresholdPoints: numericValue, name: nameGame, games: [] };
         dispatch(addData(dataObject));
         setPoints('');
       } else {
-
-        alert('Введите корректное число.');
+        console.error('Введите корректное число.');
       }
     }
   };
 
+  const handleEnterPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleButtonClick();
+    }
+  };
+
   return (
-    <div>
-      <input
+    <Box>
+      <TextField
+        label="Название игры"
         type="text"
         name="nameGame"
         placeholder="Введите название игры"
         value={nameGame}
-        onChange={handleInputChange}
+        onChange={handleChange}
+        fullWidth
+        sx={{ marginBottom: 2 }}
       />
-      <input
+      <TextField
+        label="Прогресс"
         type="number"
         name="points"
         placeholder="Введите прогресс"
         value={points}
-        onChange={handleInputChange}
+        onChange={handleChange}
+        onKeyDown={handleEnterPress}
         inputMode="numeric"
+        fullWidth
+        sx={{ marginBottom: 2 }}
       />
-      <button onClick={handleButtonClick}>Сохранить</button>
-    </div>
+      <Button variant="contained" onClick={handleButtonClick}>
+        Сохранить
+      </Button>
+    </Box>
   );
 };
 

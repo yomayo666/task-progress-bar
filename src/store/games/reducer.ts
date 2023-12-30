@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DataObject } from '../../typs/ProgressBar';
+import { DataObject } from '../../typs/progressBarTyps';
 
 interface AppState {
   data: DataObject[];
@@ -17,11 +17,12 @@ const appSlice = createSlice({
       const existingDataObject = state.data.find((dataObject) => dataObject.name === action.payload.name);
       if (existingDataObject) {
         existingDataObject.thresholdPoints += action.payload.thresholdPoints;
+
         const existingDataObjectIndex = state.data.indexOf(existingDataObject);
         const newBestResult = action.payload.thresholdPoints;
         const gamesLength = existingDataObject.games.length
         const bestResult = Math.max(existingDataObject.games[gamesLength - 1]?.bestResult || 0, newBestResult)
-  
+
         existingDataObject.games.push({
           name: `Игра ${existingDataObjectIndex + 1}.${gamesLength + 1}`,
           bestResult: bestResult,
